@@ -1,7 +1,6 @@
 import { nanoid } from "nanoid";
 import Image from "next/image";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 
 export interface IPokeStats {
   stat: string;
@@ -55,9 +54,7 @@ interface IPokemonDetail {
   weight: number;
 }
 
-export const Pokemon: React.FC<IPokemonProps> = ({
-  pokemon,
-}: IPokemonProps) => {
+const Pokemon = ({ pokemon }: IPokemonProps) => {
   const [details, setDetails] = useState<IPokemonDetail>(null);
 
   useEffect(() => {
@@ -68,7 +65,6 @@ export const Pokemon: React.FC<IPokemonProps> = ({
 
       const fetchedDetails: IPokemonDetail = await req.json();
 
-      console.log(fetchedDetails);
       return fetchedDetails;
     }
     const newDetails = getDetails();
@@ -81,8 +77,20 @@ export const Pokemon: React.FC<IPokemonProps> = ({
   return (
     <div style={{ border: "1px solid black" }}>
       <h2>{pokemon.name}</h2>
+      <Image src={pokemon.imageUrl} alt={pokemon.name} width={64} height={64} />
       {details && (
         <>
+          <ul>
+            <h4>Stats</h4>
+            {details.stats.map((item, i) => (
+              <li key={nanoid()}>
+                <span>
+                  {item.stat.name}: {item.base_stat}
+                </span>
+                <span></span>
+              </li>
+            ))}
+          </ul>
           <div>
             <h4>Type</h4>
             {details.types.map((item, i) => (
@@ -91,6 +99,7 @@ export const Pokemon: React.FC<IPokemonProps> = ({
           </div>
           <p>Height: {details.height}</p>
           <p>Weight: {details.weight}</p>
+          <p>Base XP: {details.base_experience}</p>
 
           <ul>
             <h4>Abilities</h4>
@@ -100,22 +109,11 @@ export const Pokemon: React.FC<IPokemonProps> = ({
               </li>
             ))}
           </ul>
-
-          <p>Base XP: {details.base_experience}</p>
-
-          <ul>
-            <h4>Stats</h4>
-            {details.stats.map((item, i) => (
-              <li key={nanoid()}>
-                <span>{item.stat.name}</span>
-                <span>{item.effort}</span>
-                <span>{item.base_stat}</span>
-              </li>
-            ))}
-          </ul>
         </>
       )}
-      <Image src={pokemon.imageUrl} alt={pokemon.name} width={24} height={24} />
+      {!details && <div>...Loading</div>}
     </div>
   );
 };
+// export { Pokemon };
+export default memo(Pokemon);
