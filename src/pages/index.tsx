@@ -26,7 +26,7 @@ interface Props {
 export async function getStaticProps() {
   const baseURL = "https://pokeapi.co/api/v2";
   const queryParam = "/pokemon";
-  const offset = 0;
+  const offset = 120;
   const limit = 10;
 
   const req = await fetch(
@@ -59,7 +59,7 @@ export default function Home({ pokemons, limit, offset }: Props) {
   useEffect(() => {
     console.log(pokemons);
     setPokemonArr(pokemons);
-  }, []);
+  }, [pokemons]);
 
   return (
     <div>
