@@ -1,6 +1,9 @@
-import { nanoid } from "nanoid";
-import Image from "next/image";
 import { useState, useEffect, memo } from "react";
+import Image from "next/image";
+import { nanoid } from "nanoid";
+import { FiCircle } from "react-icons/fi";
+
+import styled from "styled-components";
 
 export interface IPokeStats {
   stat: string;
@@ -54,6 +57,37 @@ interface IPokemonDetail {
   weight: number;
 }
 
+const Container = styled.div`
+  border: 1px solid;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 210px;
+
+  .info {
+    display: flex;
+    font-size: 14px;
+    justify-content: space-between;
+    padding: 0 1rem;
+    border: 1px solid;
+  }
+
+  ul,
+  p,
+  div.type {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-size: 12px;
+  }
+
+  ul h4,
+  div.type h4 {
+    padding: 0;
+    margin: 0;
+  }
+`;
 const Pokemon = ({ pokemon }: IPokemonProps) => {
   const [details, setDetails] = useState<IPokemonDetail>(null);
 
@@ -75,34 +109,54 @@ const Pokemon = ({ pokemon }: IPokemonProps) => {
   }, [pokemon.id]);
 
   return (
-    <div style={{ border: "1px solid black" }}>
-      <h2>{pokemon.name}</h2>
+    <Container>
+      <h2>
+        {pokemon.id} {pokemon.name}
+      </h2>
       <Image src={pokemon.imageUrl} alt={pokemon.name} width={64} height={64} />
       {details && (
         <>
+          <div className="info">
+            <div>
+              <p>Height </p>
+              {details.height}
+            </div>
+            <div>
+              <p>Weight </p>
+              {details.weight}
+            </div>
+            <div>
+              <p>Base XP</p> {details.base_experience}
+            </div>
+          </div>
           <ul>
-            <h4>Stats</h4>
+            <div className="type">
+              <h4>
+                <FiCircle fill="#73ad58" />
+                Type
+              </h4>
+              {details.types.map((item, i) => (
+                <span key={nanoid()}>{item.type.name}&nbsp;</span>
+              ))}
+            </div>
+            <h4>
+              <FiCircle fill="#faf" />
+              Stats
+            </h4>
             {details.stats.map((item, i) => (
               <li key={nanoid()}>
                 <span>
                   {item.stat.name}: {item.base_stat}
                 </span>
-                <span></span>
               </li>
             ))}
           </ul>
-          <div>
-            <h4>Type</h4>
-            {details.types.map((item, i) => (
-              <span key={nanoid()}>{item.type.name}</span>
-            ))}
-          </div>
-          <p>Height: {details.height}</p>
-          <p>Weight: {details.weight}</p>
-          <p>Base XP: {details.base_experience}</p>
 
           <ul>
-            <h4>Abilities</h4>
+            <h4>
+              <FiCircle fill="dodgerblue" />
+              Abilities
+            </h4>
             {details.abilities.map((item, i) => (
               <li key={nanoid()}>
                 <span>{item.ability.name}</span>
@@ -112,8 +166,8 @@ const Pokemon = ({ pokemon }: IPokemonProps) => {
         </>
       )}
       {!details && <div>...Loading</div>}
-    </div>
+    </Container>
   );
 };
-// export { Pokemon };
+
 export default memo(Pokemon);
